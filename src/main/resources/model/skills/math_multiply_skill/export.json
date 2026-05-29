@@ -1,0 +1,19 @@
+{
+  "contract_version": "1.0",
+  "examples": [
+    {
+      "input": "multiply 3 7",
+      "output": "21"
+    },
+    {
+      "input": "times 4 5",
+      "output": "20"
+    },
+    {
+      "input": "3 * 7",
+      "output": "21"
+    }
+  ],
+  "id": "math.multiply",
+  "version": "0.1.0"
+}

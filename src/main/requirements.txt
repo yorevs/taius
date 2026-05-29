@@ -1,3 +1,6 @@
 ###### AUTO-GENERATED Requirements file for: taius ######
 
-hspylib>=1.12.46
+hspylib>=1.12.53
+hspylib-clitt>=0.9.145
+retry2>=0.9.5
+rich>=14.2.0

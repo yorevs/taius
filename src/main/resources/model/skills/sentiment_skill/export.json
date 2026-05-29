@@ -1,8 +1,8 @@
 {
-  "model_path": "resources/model/skills/sentiment_skill/model.json",
+  "model_path": "/Users/hjunior/GIT-Repository/GitHub/taius/src/main/resources/model/skills/sentiment_skill/model.json",
   "skill_id": "text.sentiment",
   "skill_version": "0.1.0",
-  "train_path": "resources/model/skills/sentiment_skill/train.csv",
+  "train_path": "/Users/hjunior/GIT-Repository/GitHub/taius/src/main/resources/model/skills/sentiment_skill/train.csv",
   "training_examples": [
     {
       "label": "positive",

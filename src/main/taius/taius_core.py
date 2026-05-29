@@ -36,13 +36,35 @@ ROUTER_CONFIG_PATH = os.path.join(CORE_DIR, "router.config.json")
 DEFAULT_ROUTING_THRESHOLD = 0.60
 
 
+def _taius_package():
+    import taius
+
+    return taius
+
+
+def _console():
+    return getattr(_taius_package(), "console", console)
+
+
+def _router_config_path():
+    return getattr(_taius_package(), "ROUTER_CONFIG_PATH", ROUTER_CONFIG_PATH)
+
+
+def _router_model_path():
+    return getattr(_taius_package(), "ROUTER_MODEL_PATH", ROUTER_MODEL_PATH)
+
+
+def _router_train_path():
+    return getattr(_taius_package(), "ROUTER_TRAIN_PATH", ROUTER_TRAIN_PATH)
+
+
 def load_skills(show_disabled=True):
-    return load_taius_skills(console, show_disabled=show_disabled)
+    return load_taius_skills(_console(), show_disabled=show_disabled)
 
 
 def print_discovered_skills():
     skills = load_skills()
-    print_skills_table(console, skills, "Discovered Taius Skills")
+    print_skills_table(_console(), skills, "Discovered Taius Skills")
 
 
 def tokenize_router_text(text):
@@ -52,7 +74,7 @@ def tokenize_router_text(text):
 def build_router_training_file(skills):
     os.makedirs(CORE_DIR, exist_ok=True)
 
-    with open(ROUTER_TRAIN_PATH, "w", newline="") as file:
+    with open(_router_train_path(), "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["input", "skill_name"])
 
@@ -71,7 +93,7 @@ def train_router(skills):
     word_counts = {}
     vocabulary = set()
 
-    with open(ROUTER_TRAIN_PATH, "r", newline="") as file:
+    with open(_router_train_path(), "r", newline="") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
@@ -91,38 +113,38 @@ def train_router(skills):
         "word_counts": word_counts
     }
 
-    with open(ROUTER_MODEL_PATH, "w") as file:
+    with open(_router_model_path(), "w") as file:
         import json
         json.dump(model, file, indent=2, sort_keys=True)
 
-    console.print(f"[green]Router trained:[/green] {ROUTER_MODEL_PATH}")
+    _console().print(f"[green]Router trained:[/green] {_router_model_path()}")
 
 
 def router_needs_training():
-    return not os.path.exists(ROUTER_MODEL_PATH) or skills_changed()
+    return not os.path.exists(_router_model_path()) or skills_changed()
 
 
 def load_router_config():
-    return taius_load_router_config(ROUTER_CONFIG_PATH, CORE_DIR)
+    return taius_load_router_config(_router_config_path(), CORE_DIR)
 
 
 def save_router_config(config):
-    return taius_save_router_config(config, ROUTER_CONFIG_PATH, CORE_DIR)
+    return taius_save_router_config(config, _router_config_path(), CORE_DIR)
 
 
 def get_routing_threshold():
-    return taius_get_routing_threshold(ROUTER_CONFIG_PATH, CORE_DIR)
+    return taius_get_routing_threshold(_router_config_path(), CORE_DIR)
 
 
 def load_router_model():
-    return taius_load_router_model(ROUTER_MODEL_PATH)
+    return taius_load_router_model(_router_model_path())
 
 
 def predict_skill_with_router(input_data: str, skills):
     return taius_predict_skill_with_router(
         input_data,
         skills,
-        ROUTER_MODEL_PATH,
+        _router_model_path(),
         tokenize_router_text
     )
 
@@ -131,7 +153,7 @@ def route_to_skill(input_data: str, skills):
     return taius_route_to_skill(
         input_data,
         skills,
-        ROUTER_MODEL_PATH,
+        _router_model_path(),
         tokenize_router_text,
         get_routing_threshold
     )
@@ -143,9 +165,9 @@ def teach_router(input_data: str, skill_name: str, skills):
     if skill_name not in valid_names:
         raise ValueError(f"Unknown skill: {skill_name}")
 
-    file_exists = os.path.exists(ROUTER_TRAIN_PATH)
+    file_exists = os.path.exists(_router_train_path())
 
-    with open(ROUTER_TRAIN_PATH, "a", newline="") as file:
+    with open(_router_train_path(), "a", newline="") as file:
         writer = csv.writer(file)
 
         if not file_exists:
@@ -161,7 +183,7 @@ def train_router_from_existing_file():
     word_counts = {}
     vocabulary = set()
 
-    with open(ROUTER_TRAIN_PATH, "r", newline="") as file:
+    with open(_router_train_path(), "r", newline="") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
@@ -181,20 +203,20 @@ def train_router_from_existing_file():
         "word_counts": word_counts
     }
 
-    with open(ROUTER_MODEL_PATH, "w") as file:
+    with open(_router_model_path(), "w") as file:
         import json
         json.dump(model, file, indent=2, sort_keys=True)
 
-    console.print(f"[green]Router updated:[/green] {ROUTER_MODEL_PATH}")
+    _console().print(f"[green]Router updated:[/green] {_router_model_path()}")
 
 
 def forget_router(input_data: str):
-    if not os.path.exists(ROUTER_TRAIN_PATH):
+    if not os.path.exists(_router_train_path()):
         return
 
     kept_rows = []
 
-    with open(ROUTER_TRAIN_PATH, "r", newline="") as file:
+    with open(_router_train_path(), "r", newline="") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
@@ -203,7 +225,7 @@ def forget_router(input_data: str):
 
             kept_rows.append(row)
 
-    with open(ROUTER_TRAIN_PATH, "w", newline="") as file:
+    with open(_router_train_path(), "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["input", "skill_name"])
         writer.writeheader()
         writer.writerows(kept_rows)
@@ -216,7 +238,7 @@ def train_skill_with_monitor(skill):
     log_path = os.path.join(skill["model_dir"], "training.log")
 
     monitor = TrainingLogMonitor(
-        console=console,
+        console=_console(),
         log_path=log_path,
         title=f"Training skill: {skill['name']}"
     )
@@ -233,7 +255,7 @@ def train_router_if_needed(skills):
     if not router_needs_training():
         return
 
-    console.rule("[bold yellow]Training core router")
+    _console().rule("[bold yellow]Training core router")
     train_router(skills)
     update_skills_hash()
 
@@ -334,7 +356,7 @@ def train_skills_if_needed():
         log_skill_event(skill, "auto-training finished")
 
 def print_router_examples():
-    if not os.path.exists(ROUTER_TRAIN_PATH):
+    if not os.path.exists(_router_train_path()):
         console.print("[yellow]No router examples found.[/yellow]")
         return
 
@@ -342,7 +364,7 @@ def print_router_examples():
     table.add_column("Input")
     table.add_column("Skill")
 
-    with open(ROUTER_TRAIN_PATH, "r", newline="") as file:
+    with open(_router_train_path(), "r", newline="") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
@@ -511,13 +533,13 @@ def export_router():
 
     examples = []
 
-    if os.path.exists(ROUTER_TRAIN_PATH):
-        with open(ROUTER_TRAIN_PATH, "r", newline="") as file:
+    if os.path.exists(_router_train_path()):
+        with open(_router_train_path(), "r", newline="") as file:
             examples = list(csv.DictReader(file))
 
     data = {
-        "router_train_path": ROUTER_TRAIN_PATH,
-        "router_model_path": ROUTER_MODEL_PATH,
+        "router_train_path": _router_train_path(),
+        "router_model_path": _router_model_path(),
         "training_examples": examples
     }
 
@@ -540,7 +562,7 @@ def import_router():
 
     examples = data.get("training_examples", [])
 
-    with open(ROUTER_TRAIN_PATH, "w", newline="") as file:
+    with open(_router_train_path(), "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["input", "skill_name"])
         writer.writeheader()
 
@@ -801,9 +823,9 @@ def print_skill_log(skill_name, skills, line_count=20):
 def print_router_stats():
     print_taius_router_stats(
         console,
-        ROUTER_MODEL_PATH,
-        ROUTER_TRAIN_PATH,
-        ROUTER_CONFIG_PATH,
+        _router_model_path(),
+        _router_train_path(),
+        _router_config_path(),
         get_routing_threshold
     )
 
@@ -814,11 +836,11 @@ def print_status(skills):
         skills,
         APP_NAME,
         CORE_DIR,
-        ROUTER_MODEL_PATH,
-        ROUTER_TRAIN_PATH,
+        _router_model_path(),
+        _router_train_path(),
         SKILLS_MODEL_DIR,
         SKILLS_SOURCE_DIR,
-        ROUTER_CONFIG_PATH,
+        _router_config_path(),
         get_routing_threshold,
         skills_changed
     )

@@ -1,0 +1,19 @@
+{
+  "contract_version": "1.0",
+  "examples": [
+    {
+      "input": "sum 2 3",
+      "output": "5"
+    },
+    {
+      "input": "add 10 5",
+      "output": "15"
+    },
+    {
+      "input": "2 + 3",
+      "output": "5"
+    }
+  ],
+  "id": "math.sum",
+  "version": "0.1.0"
+}
