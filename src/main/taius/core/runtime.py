@@ -1,6 +1,8 @@
 import os
 
 from clitt.core.term.terminal import terminal
+from clitt.core.tui.line_input.line_input import line_input
+
 from taius.core.training_monitor import TrainingLogMonitor
 
 
@@ -27,20 +29,7 @@ def run_taius_loop(
     train_router_if_needed(skills)
     restore_terminal_state()
 
-    while True:
-        try:
-            input_data = input("Taius> ").strip()
-        except KeyboardInterrupt:
-            console.print("")
-            console.print("[yellow]Interrupted. Exiting Taius.[/yellow]")
-            break
-        except EOFError:
-            console.print("")
-            console.print("[yellow]EOF received. Exiting Taius.[/yellow]")
-            break
-
-        if not input_data:
-            continue
+    while input_data := line_input("Taius> ").strip():
 
         if is_command(input_data):
             command_context = build_command_context(skills)
