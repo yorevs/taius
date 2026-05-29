@@ -1,69 +1,220 @@
-<img src="cover-img.png" width="64" height="64" align="right" />
+# Taius
 
-# Title
+Taius is a generic dynamic skill runtime.
 
-> Subtitle
+It loads Python skills from:
 
-[![License](https://badgen.net/badge/license/MIT/gray)](LICENSE.md)
+    skills/<skill_name>/skill.py
 
-<img src="main-img.png" width="100%" height="100%" />
+Runtime/model resources live under:
 
----
+    resources/model/
 
-Main text
+## Layout
 
-> **REMARKS**
+    taius.py
+    core/
+      paths.py
+      skills.py
+      commands.py
+      router.py
+      text.py
+    skills/
+      _template/
+        skill.py
+      echo_skill/
+        skill.py
+      sentiment_skill/
+        skill.py
+    resources/
+      launcher.bash
+      core-patcher.bash
+      patches/
+      backups/
+      model/
+        core/
+        skills/
 
-More about the project
+## Skill Contract
 
-## Key Features
+Each skill must expose:
 
-- Key-Feature 1
-- Key-Feature 2
-- Key-Feature 3
-- Key-Feature 4
+    describe() -> dict
+    configure(config: dict)
+    can_handle(input_data)
+    can_train() -> bool
+    needs_training() -> bool
+    train()
+    predict(input_data)
+    teach(input_data, expected_output)
+    forget(input_data, expected_output=None)
+    training_examples()
+    export_data()
+    import_data(data)
 
-## Topics
+`describe()` must include:
 
-About the topics
+    id
+    version
+    contract_version
+    input_type
+    output_type
 
-## Installation
+Current supported contract version:
 
-### Operating Systems
+    1.0
 
-- Darwin (macOS)
-  - High Sierra and higher
-- Linux
-  - Ubuntu 16 and higher
-  - CentOS 7 and higher
-  - Fedora 31 and higher
-  - Alpine (jenkins-agent)
+## Runtime Commands
 
-> More about
+    /help
+    /version
+    /status
+    /doctor
+    /skills
+    /reload
+    /router-examples
+    /router-stats
+    /get-routing-threshold
+    /set-routing-threshold <value>
+    /export-router
+    /import-router
+    /backup-all
+    /backup-all --snapshot
+    /restore-all
+    /restore-all <snapshot>
+    /skill-examples <skill_name>
+    /skill-stats <skill_name>
+    /skill-log <skill_name> [lines]
+    /tail-log [lines]
+    /validate-skill <skill_name>
+    /disable-skill <skill_name>
+    /enable-skill <skill_name>
+    /new-skill <skill_name>
+    /delete-skill <skill_name>
+    /rename-skill <old_name> <new_name>
+    /export-skill <skill_name>
+    /import-skill <skill_name>
+    /teach-router <skill_name> :: <input text>
+    /forget-router <input text>
+    /teach-skill <skill_name> :: <input text> => <expected output>
+    /forget-skill <skill_name> :: <input text>
+    /quit
+    /exit
 
-### Sub-topics
+## Examples
 
-More subtopics
+    echo hello
+    sentiment I love this
+    this is awesome
 
-## Support
+## Router
 
-> Your support and contributions are greatly appreciated in helping us improve and enhance the project. Together, we can make it even better!
+The router learns which skill should handle an input.
 
-About supporting the project
+Router files:
 
-Thank you <3 !!
+    resources/model/core/router.csv
+    resources/model/core/router.json
+    resources/model/core/router.config.json
 
-## Known Issues
+Routing threshold can be changed with:
 
-Talk about known issues
+    /set-routing-threshold 0.68
 
-## Contacts
+## Skill Enable / Disable
 
-- Documentation: [API](docs/handbook/handbook.md)
-- License: [MIT](LICENSE.md)
-- Issue tracker: [ISSUES](https://github.com/<your_user>/<your_project>/issues)
-- Official chat: [GITTER](https://gitter.im/<your_project>/community)
-- Maintainer: [REDDIT](https://www.reddit.com/user/<your_user>)
-- Mailto: TODO
+Disabled skills use marker files:
 
-Enjoy!
+    resources/model/skills/<skill_name>/.disabled
+
+## Logs
+
+Skill logs:
+
+    resources/model/skills/<skill_name>/training.log
+
+View logs with:
+
+    /skill-log <skill_name> [lines]
+    /tail-log [lines]
+
+## Snapshots
+
+Snapshot backups are stored under:
+
+    resources/model/backups/<timestamp>/
+
+Create a snapshot:
+
+    /backup-all --snapshot
+
+Restore one:
+
+    /restore-all <snapshot>
+
+## Patch Workflow
+
+Write patches into:
+
+    resources/patches/*.patch
+
+Run:
+
+    ./resources/launcher.bash
+
+Supported launcher patch targets:
+
+    taius.py
+    core/*.py
+    skills/*/skill.py
+    resources/core-patcher.bash
+
+`resources/launcher.bash` is intentionally not patched by itself.
+
+## Tests
+
+Run:
+
+    python3 -m unittest discover -s tests -p 'test_*.py'
+
+## Math Skills
+
+Exact deterministic math skills:
+
+    math_sum_skill
+    math_subtract_skill
+    math_multiply_skill
+    math_divide_skill
+
+Approximation skill:
+
+    math_approx_skill
+
+`math_approx_skill` is intentionally trainable and approximate. It uses a pure-Python weighted model with one weight vector per operation. It stores training examples in:
+
+    resources/model/skills/math_approx_skill/train.csv
+
+and model weights in:
+
+    resources/model/skills/math_approx_skill/model.json
+
+## Training Log Monitor
+
+Taius uses `TrainingLogMonitor` for long-running training.
+
+Behavior:
+
+    no training running -> no watcher
+    training starts -> watcher tails training.log
+    training ends -> watcher stops
+
+Log paths:
+
+    resources/model/core/training.log
+    resources/model/skills/<skill_name>/training.log
+
+Supported progress line format:
+
+    epoch=5/200 loss=0.00177957 examples=2000000 batch_size=256
+
+The monitor parses epoch, loss, examples, and batch_size, then updates a Rich progress bar.

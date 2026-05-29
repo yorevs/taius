@@ -1,0 +1,34 @@
+{
+  "router_model_path": "/Users/hjunior/GIT-Repository/GitHub/taius/src/main/resources/model/core/router.json",
+  "router_train_path": "/Users/hjunior/GIT-Repository/GitHub/taius/src/main/resources/model/core/router.csv",
+  "training_examples": [
+    {
+      "input": "echo hello",
+      "skill_name": "echo_skill"
+    },
+    {
+      "input": "repeat this text",
+      "skill_name": "echo_skill"
+    },
+    {
+      "input": "say this back",
+      "skill_name": "echo_skill"
+    },
+    {
+      "input": "sentiment I love this",
+      "skill_name": "sentiment_skill"
+    },
+    {
+      "input": "sentiment this is terrible",
+      "skill_name": "sentiment_skill"
+    },
+    {
+      "input": "is this positive: amazing work",
+      "skill_name": "sentiment_skill"
+    },
+    {
+      "input": "aprox 2 + 4",
+      "skill_name": "math_approx_skill"
+    }
+  ]
+}

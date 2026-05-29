@@ -1,0 +1,8 @@
+input,skill_name
+echo hello,echo_skill
+repeat this text,echo_skill
+say this back,echo_skill
+sentiment I love this,sentiment_skill
+sentiment this is terrible,sentiment_skill
+is this positive: amazing work,sentiment_skill
+aprox 2 + 4,math_approx_skill

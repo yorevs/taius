@@ -1,0 +1,81 @@
+import importlib.util
+import sys
+import unittest
+from pathlib import Path
+
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_DIR))
+
+
+class NullConsole:
+
+    def print(self, *args, **kwargs):
+        pass
+
+    def rule(self, *args, **kwargs):
+        pass
+
+
+def load_skill_module(path):
+    spec = importlib.util.spec_from_file_location("test_skill_module", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class TaiusSmokeTest(unittest.TestCase):
+
+    def test_load_skills_ignores_template(self):
+        from taius.core.skills import load_skills
+
+        skills = load_skills(NullConsole(), show_disabled=False)
+        names = {skill["name"] for skill in skills}
+
+        self.assertIn("echo_skill", names)
+        self.assertIn("sentiment_skill", names)
+        self.assertNotIn("_template", names)
+
+    def test_echo_skill_contract_and_predict(self):
+        module = load_skill_module(PROJECT_DIR / "skills" / "echo_skill" / "skill.py")
+        description = module.describe()
+
+        self.assertEqual(description["id"], "core.echo")
+        self.assertEqual(description["contract_version"], "1.0")
+        self.assertEqual(description["input_type"], "text")
+        self.assertEqual(description["output_type"], "text")
+        self.assertEqual(module.predict("echo hello"), "hello")
+
+    def test_skill_contract_fields(self):
+        required_fields = {
+            "id",
+            "version",
+            "contract_version",
+            "input_type",
+            "output_type",
+        }
+
+        for skill_path in (PROJECT_DIR / "skills").glob("*/skill.py"):
+            module = load_skill_module(skill_path)
+            description = module.describe()
+
+            for field in required_fields:
+                self.assertIn(field, description, f"{skill_path} missing {field}")
+
+    def test_router_threshold_config(self):
+        import taius
+
+        threshold = taius.get_routing_threshold()
+
+        self.assertGreaterEqual(threshold, 0.0)
+        self.assertLessEqual(threshold, 1.0)
+
+    def test_template_contract(self):
+        module = load_skill_module(PROJECT_DIR / "skills" / "_template" / "skill.py")
+        description = module.describe()
+
+        self.assertEqual(description["contract_version"], "1.0")
+        self.assertFalse(module.can_handle("anything"))
+
+
+if __name__ == "__main__":
+    unittest.main()

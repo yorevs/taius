@@ -1,0 +1,19 @@
+{
+  "contract_version": "1.0",
+  "examples": [
+    {
+      "input": "divide 10 2",
+      "output": "5"
+    },
+    {
+      "input": "10 / 2",
+      "output": "5"
+    },
+    {
+      "input": "divide 9 3",
+      "output": "3"
+    }
+  ],
+  "id": "math.divide",
+  "version": "0.1.0"
+}

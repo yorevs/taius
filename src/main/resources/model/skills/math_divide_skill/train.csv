@@ -1,0 +1,4 @@
+input,output
+divide 10 2,5
+10 / 2,5
+divide 9 3,3

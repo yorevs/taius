@@ -1,0 +1,56 @@
+{
+  "labels": {
+    "echo_skill": 3,
+    "math_approx_skill": 1,
+    "sentiment_skill": 3
+  },
+  "vocabulary": [
+    "+",
+    "2",
+    "4",
+    "amazing",
+    "aprox",
+    "back",
+    "echo",
+    "hello",
+    "i",
+    "is",
+    "love",
+    "positive",
+    "repeat",
+    "say",
+    "sentiment",
+    "terrible",
+    "text",
+    "this",
+    "work"
+  ],
+  "word_counts": {
+    "echo_skill": {
+      "back": 1,
+      "echo": 1,
+      "hello": 1,
+      "repeat": 1,
+      "say": 1,
+      "text": 1,
+      "this": 2
+    },
+    "math_approx_skill": {
+      "+": 1,
+      "2": 1,
+      "4": 1,
+      "aprox": 1
+    },
+    "sentiment_skill": {
+      "amazing": 1,
+      "i": 1,
+      "is": 2,
+      "love": 1,
+      "positive": 1,
+      "sentiment": 2,
+      "terrible": 1,
+      "this": 3,
+      "work": 1
+    }
+  }
+}

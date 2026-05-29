@@ -1,0 +1,21 @@
+text,label
+I love this,positive
+this is great,positive
+amazing work,positive
+excellent result,positive
+very good,positive
+I like this,positive
+this makes me happy,positive
+perfect job,positive
+beautiful output,positive
+that is awesome,positive
+I hate this,negative
+this is terrible,negative
+awful work,negative
+bad result,negative
+very poor,negative
+I dislike this,negative
+this makes me angry,negative
+horrible job,negative
+ugly output,negative
+that is awful,negative

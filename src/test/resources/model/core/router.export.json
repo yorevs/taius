@@ -1,0 +1,5 @@
+{
+  "router_model_path": "resources/model/core/router.json",
+  "router_train_path": "resources/model/core/router.csv",
+  "training_examples": []
+}

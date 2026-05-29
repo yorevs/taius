@@ -1,0 +1,4 @@
+input,output
+subtract 10 4,6
+minus 9 2,7
+10 - 4,6

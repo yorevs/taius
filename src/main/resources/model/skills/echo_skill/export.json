@@ -1,0 +1,16 @@
+{
+  "examples": [
+    {
+      "input": "echo hello",
+      "output": "hello"
+    },
+    {
+      "input": "repeat this text",
+      "output": "this text"
+    },
+    {
+      "input": "say this back",
+      "output": "this back"
+    }
+  ]
+}
