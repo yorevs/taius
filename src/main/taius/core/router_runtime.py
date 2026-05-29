@@ -1,3 +1,4 @@
+"""Module for router runtime."""
 import json
 import math
 import os
@@ -7,6 +8,7 @@ DEFAULT_ROUTING_THRESHOLD = 0.60
 
 
 def load_router_config(router_config_path, core_dir):
+    """Load the router configuration from disk."""
     default_config = {
         "routing_threshold": DEFAULT_ROUTING_THRESHOLD
     }
@@ -29,6 +31,7 @@ def load_router_config(router_config_path, core_dir):
 
 
 def save_router_config(config, router_config_path, core_dir):
+    """Persist the router configuration to disk."""
     os.makedirs(core_dir, exist_ok=True)
 
     with open(router_config_path, "w") as file:
@@ -36,16 +39,19 @@ def save_router_config(config, router_config_path, core_dir):
 
 
 def get_routing_threshold(router_config_path, core_dir):
+    """Return the configured routing threshold."""
     config = load_router_config(router_config_path, core_dir)
     return float(config.get("routing_threshold", DEFAULT_ROUTING_THRESHOLD))
 
 
 def load_router_model(router_model_path):
+    """Load the persisted router model."""
     with open(router_model_path, "r") as file:
         return json.load(file)
 
 
 def predict_skill_with_router(input_data: str, skills, router_model_path, tokenize_router_text):
+    """Predict the best skill using the router model."""
     if not os.path.exists(router_model_path):
         return None, 0.0
 
@@ -92,6 +98,7 @@ def predict_skill_with_router(input_data: str, skills, router_model_path, tokeni
 
 
 def route_to_skill(input_data: str, skills, router_model_path, tokenize_router_text, get_routing_threshold):
+    """Route input to the best matching skill."""
     for skill in skills:
         module = skill["module"]
 

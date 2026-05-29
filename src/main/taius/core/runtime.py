@@ -1,3 +1,4 @@
+"""Module for runtime."""
 import os
 
 from clitt.core.term.terminal import terminal

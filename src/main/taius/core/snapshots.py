@@ -1,3 +1,4 @@
+"""Module for snapshots."""
 import os
 import time
 
@@ -5,6 +6,7 @@ from rich.table import Table
 
 
 def print_snapshot_list(console, SNAPSHOT_BACKUP_DIR):
+    """Render the snapshot list."""
     if not os.path.isdir(SNAPSHOT_BACKUP_DIR):
         console.print("[yellow]No snapshots found.[/yellow]")
         return
@@ -33,6 +35,7 @@ def print_snapshot_list(console, SNAPSHOT_BACKUP_DIR):
 
 
 def backup_all_snapshot(skills, SNAPSHOT_BACKUP_DIR, CORE_DIR, export_router, export_skill):
+    """Create a snapshot backup of the router and skills."""
     import json
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -80,6 +83,7 @@ def backup_all_snapshot(skills, SNAPSHOT_BACKUP_DIR, CORE_DIR, export_router, ex
 
 
 def restore_all_snapshot(snapshot_name, skills, SNAPSHOT_BACKUP_DIR, CORE_DIR, SKILLS_MODEL_DIR, import_router, import_skill, find_skill_by_name):
+    """Restore router and skill data from a snapshot."""
     import json
 
     safe_name = snapshot_name.strip()

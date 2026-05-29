@@ -1,3 +1,4 @@
+"""Module for paths."""
 import os
 
 from __classpath__ import classpath  # noqa: E402
@@ -19,6 +20,7 @@ ROUTER_TRAIN_PATH = os.path.join(CORE_DIR, "router.csv")
 
 
 def ensure_layout():
+    """Create the expected repository directory layout."""
     os.makedirs(CORE_DIR, exist_ok=True)
     os.makedirs(SKILLS_MODEL_DIR, exist_ok=True)
     os.makedirs(SNAPSHOT_BACKUP_DIR, exist_ok=True)

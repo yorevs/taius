@@ -1,3 +1,4 @@
+"""Module for test skill management."""
 import shutil
 import sys
 import unittest
@@ -11,7 +12,9 @@ SKILLS_MODEL_DIR = PROJECT_DIR / "main" / "resources" / "model" / "skills"
 
 class SkillManagementTest(unittest.TestCase):
 
+    """Tests for skill lifecycle helpers."""
     def setUp(self):
+        """Prepare the test fixture."""
         self.skill_name = "unit_temp_skill"
         self.renamed_skill_name = "unit_renamed_skill"
 
@@ -20,9 +23,11 @@ class SkillManagementTest(unittest.TestCase):
             shutil.rmtree(SKILLS_MODEL_DIR / name, ignore_errors=True)
 
     def tearDown(self):
+        """Clean up after the test."""
         self.setUp()
 
     def test_create_rename_delete_skill(self):
+        """Verify the skill lifecycle helpers."""
         from taius.core.skill_management import (
             create_new_skill,
             delete_skill,
@@ -55,6 +60,7 @@ class SkillManagementTest(unittest.TestCase):
         self.assertFalse((SKILLS_DIR / self.renamed_skill_name).exists())
 
     def test_invalid_skill_name_rejected(self):
+        """Verify invalid skill names are rejected."""
         from taius.core.validation import validate_skill_name
 
         with self.assertRaises(ValueError):

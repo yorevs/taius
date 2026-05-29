@@ -74,6 +74,7 @@ _EXPORTS = {
 
 
 def __getattr__(name):
+    """Dynamically resolve package exports."""
     if name in _EXPORTS:
         module, attr = _EXPORTS[name]
         mod = importlib.import_module(f"{__name__}.{module}")

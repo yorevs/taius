@@ -1,4 +1,6 @@
+"""Module for commands."""
 def find_skill(skill_name, skills):
+  """Return the matching skill from the provided list."""
   for skill in skills:
     if skill["name"] == skill_name:
       return skill
@@ -7,10 +9,12 @@ def find_skill(skill_name, skills):
 
 
 def is_command(input_data):
+  """Return whether the input is a command."""
   return input_data.startswith("/")
 
 
 def handle_command(input_data, context):
+  """Handle a slash command and return the next state."""
   console = context["console"]
   skills = context["skills"]
 

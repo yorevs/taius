@@ -1,3 +1,4 @@
+"""Module for test taius smoke."""
 import importlib.util
 import sys
 import unittest
@@ -10,14 +11,18 @@ SKILLS_DIR = PROJECT_DIR / "main" / "taius" / "skills"
 
 class NullConsole:
 
+    """Test double that discards printed output."""
     def print(self, *args, **kwargs):
+        """Execute print."""
         pass
 
     def rule(self, *args, **kwargs):
+        """Execute rule."""
         pass
 
 
 def load_skill_module(path):
+    """Load a skill module from a file path."""
     spec = importlib.util.spec_from_file_location("test_skill_module", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -26,7 +31,9 @@ def load_skill_module(path):
 
 class TaiusSmokeTest(unittest.TestCase):
 
+    """Smoke tests for packaged skills and router state."""
     def test_load_skills_ignores_template(self):
+        """Verify template skills are ignored."""
         from taius.core.skills import load_skills
 
         skills = load_skills(NullConsole(), show_disabled=False)
@@ -37,11 +44,13 @@ class TaiusSmokeTest(unittest.TestCase):
         self.assertNotIn("_template", names)
 
     def test_skills_source_dir_points_to_packaged_skills(self):
+        """Verify the packaged skills path."""
         from taius.core.paths import SKILLS_SOURCE_DIR
 
         self.assertEqual(Path(SKILLS_SOURCE_DIR).resolve(), SKILLS_DIR.resolve())
 
     def test_echo_skill_contract_and_predict(self):
+        """Verify the echo skill contract and prediction."""
         module = load_skill_module(SKILLS_DIR / "echo_skill" / "skill.py")
         description = module.describe()
 
@@ -52,6 +61,7 @@ class TaiusSmokeTest(unittest.TestCase):
         self.assertEqual(module.predict("echo hello"), "hello")
 
     def test_skill_contract_fields(self):
+        """Verify all skill contracts expose the required fields."""
         required_fields = {
             "id",
             "version",
@@ -68,6 +78,7 @@ class TaiusSmokeTest(unittest.TestCase):
                 self.assertIn(field, description, f"{skill_path} missing {field}")
 
     def test_router_threshold_config(self):
+        """Verify the router threshold is within range."""
         import taius
 
         threshold = taius.get_routing_threshold()
@@ -76,6 +87,7 @@ class TaiusSmokeTest(unittest.TestCase):
         self.assertLessEqual(threshold, 1.0)
 
     def test_template_contract(self):
+        """Verify the template skill contract."""
         module = load_skill_module(SKILLS_DIR / "_template" / "skill.py")
         description = module.describe()
 

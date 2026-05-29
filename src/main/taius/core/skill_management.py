@@ -1,9 +1,11 @@
+"""Module for skill management."""
 import os
 import shutil
 import time
 
 
 def find_skill_by_name(skill_name, skills):
+    """Return the matching skill when present."""
     for skill in skills:
         if skill["name"] == skill_name:
             return skill
@@ -12,6 +14,7 @@ def find_skill_by_name(skill_name, skills):
 
 
 def create_new_skill(skill_name, skills_source_dir):
+    """Create a new skill from the template."""
     safe_name = skill_name.strip()
 
     if not safe_name:
@@ -51,6 +54,7 @@ def create_new_skill(skill_name, skills_source_dir):
 
 
 def delete_skill(skill_name, skills_source_dir, skills_model_dir, validate_skill_name):
+    """Delete a skill source and model directory."""
     safe_name = skill_name.strip()
 
     if not safe_name:
@@ -85,6 +89,7 @@ def delete_skill(skill_name, skills_source_dir, skills_model_dir, validate_skill
 
 
 def rename_skill(old_name, new_name, skills_source_dir, skills_model_dir, validate_skill_name):
+    """Rename a skill source and model directory."""
     old_safe_name = validate_skill_name(old_name)
     new_safe_name = validate_skill_name(new_name)
 
@@ -127,6 +132,7 @@ def rename_skill(old_name, new_name, skills_source_dir, skills_model_dir, valida
 
 
 def disable_skill(skill_name, skills):
+    """Mark a loaded skill as disabled."""
     target_skill = find_skill_by_name(skill_name, skills)
 
     if target_skill is None:
@@ -142,6 +148,7 @@ def disable_skill(skill_name, skills):
 
 
 def enable_skill(skill_name, skills_model_dir):
+    """Remove the disabled marker from a skill."""
     disabled_path = os.path.join(skills_model_dir, skill_name, ".disabled")
 
     if not os.path.exists(disabled_path):
@@ -152,6 +159,7 @@ def enable_skill(skill_name, skills_model_dir):
 
 
 def log_skill_event(skill, message):
+    """Append a message to the skill training log."""
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join(skill["model_dir"], "training.log")
 

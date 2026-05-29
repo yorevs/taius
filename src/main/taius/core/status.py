@@ -1,3 +1,4 @@
+"""Module for status."""
 import os
 
 from rich.table import Table
@@ -16,6 +17,7 @@ def print_status(
     get_routing_threshold,
     skills_changed
 ):
+    """Render the status output."""
     table = Table(title="Taius Status")
     table.add_column("Item")
     table.add_column("Value")

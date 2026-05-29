@@ -1,3 +1,4 @@
+"""Module for validation."""
 import os
 
 
@@ -20,6 +21,7 @@ REQUIRED_SKILL_FUNCTIONS = [
 
 
 def validate_skill_contract(skill):
+    """Validate a loaded skill module against the contract."""
     issues = []
     module = skill["module"]
 
@@ -78,6 +80,7 @@ def validate_skill_contract(skill):
 
 
 def validate_skill_name(skill_name):
+    """Validate and normalize a skill name."""
     safe_name = skill_name.strip()
 
     if not safe_name:

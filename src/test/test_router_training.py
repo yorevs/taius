@@ -1,3 +1,4 @@
+"""Module for test router training."""
 import csv
 import sys
 import tempfile
@@ -12,16 +13,21 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 class NullConsole:
 
+    """Test double that discards printed output."""
     def print(self, *args, **kwargs):
+        """Execute print."""
         pass
 
     def rule(self, *args, **kwargs):
+        """Execute rule."""
         pass
 
 
 class RouterTrainingTest(unittest.TestCase):
 
+    """Tests for router training updates."""
     def test_teach_and_forget_router_example(self):
+        """Verify router teach and forget behavior."""
         import taius
 
         with tempfile.TemporaryDirectory() as temp_dir:

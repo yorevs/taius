@@ -1,3 +1,4 @@
+"""Module for router stats."""
 import csv
 import os
 
@@ -11,6 +12,7 @@ def print_router_stats(
     router_config_path,
     get_routing_threshold
 ):
+    """Render router statistics."""
     import json
 
     table = Table(title="Router Stats")

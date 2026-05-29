@@ -1,3 +1,4 @@
+"""Module for test commands."""
 import sys
 import unittest
 from pathlib import Path
@@ -8,16 +9,21 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 class FakeConsole:
 
+    """Test double that captures printed output."""
     def __init__(self):
+        """Initialize the instance."""
         self.messages = []
 
     def print(self, *args, **kwargs):
+        """Execute print."""
         self.messages.append(" ".join(str(arg) for arg in args))
 
 
 class CommandsTest(unittest.TestCase):
 
+    """Tests for command handling."""
     def make_context(self):
+        """Build the test command handler context."""
         console = FakeConsole()
         calls = []
 
@@ -64,6 +70,7 @@ class CommandsTest(unittest.TestCase):
         return console, calls, context
 
     def test_basic_commands(self):
+        """Verify common command handling."""
         from taius.core.commands import handle_command
 
         _, calls, context = self.make_context()
@@ -84,6 +91,7 @@ class CommandsTest(unittest.TestCase):
             self.assertIn(expected, calls)
 
     def test_threshold_command(self):
+        """Verify the routing threshold command."""
         from taius.core.commands import handle_command
 
         _, calls, context = self.make_context()
@@ -93,6 +101,7 @@ class CommandsTest(unittest.TestCase):
         self.assertIn(("set_threshold", "0.68"), calls)
 
     def test_skill_view_commands(self):
+        """Verify the skill view commands."""
         from taius.core.commands import handle_command
 
         _, calls, context = self.make_context()
@@ -108,6 +117,7 @@ class CommandsTest(unittest.TestCase):
         self.assertIn(("validate_skill", "echo_skill"), calls)
 
     def test_quit_commands(self):
+        """Verify quit and exit commands."""
         from taius.core.commands import handle_command
 
         _, _, context = self.make_context()

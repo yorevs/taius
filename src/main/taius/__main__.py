@@ -40,6 +40,7 @@ class Main(TUIApplication):
     INSTANCE: "Main"
 
     def __init__(self, app_name: str):
+        """Initialize the instance."""
         super().__init__(app_name, self.VERSION, self.DESCRIPTION.format(self.VERSION), resource_dir=self.RESOURCE_DIR)
 
     def _setup_arguments(self) -> None:

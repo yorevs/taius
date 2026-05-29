@@ -1,3 +1,4 @@
+"""Skill implementation module."""
 import csv
 import json
 import math
@@ -15,6 +16,7 @@ VERSION_PATH = None
 
 
 def configure(config):
+    """Configure the module with the provided runtime settings."""
     global CONFIG, MODEL_PATH, TRAIN_PATH, VERSION_PATH
 
     CONFIG = config
@@ -28,6 +30,7 @@ def configure(config):
 
 
 def describe():
+    """Return the module metadata contract."""
     return {
         "id": SKILL_ID,
         "version": SKILL_VERSION,
@@ -43,6 +46,7 @@ def describe():
 
 
 def can_handle(input_data):
+    """Return whether the input matches this handler."""
     text = str(input_data).strip().lower()
 
     return (
@@ -53,10 +57,12 @@ def can_handle(input_data):
 
 
 def can_train():
+    """Return whether the module supports training."""
     return True
 
 
 def needs_training():
+    """Return whether the module needs training."""
     if MODEL_PATH is None:
         return True
 
@@ -71,10 +77,12 @@ def needs_training():
 
 
 def tokenize(text):
+    """Split text into normalized tokens."""
     return re.findall(r"[a-zA-Z']+", text.lower())
 
 
 def normalize_input(input_data):
+    """Execute normalize input."""
     text = str(input_data).strip()
 
     prefixes = [
@@ -93,6 +101,7 @@ def normalize_input(input_data):
 
 
 def generate_training_file():
+    """Execute generate training file."""
     rows = [
         ("I love this", "positive"),
         ("this is great", "positive"),
@@ -124,6 +133,7 @@ def generate_training_file():
 
 
 def train():
+    """Train the module and persist its model."""
     generate_training_file()
 
     label_counts = defaultdict(int)
@@ -163,11 +173,13 @@ def train():
 
 
 def load_model():
+    """Load persisted model state from disk."""
     with open(MODEL_PATH, "r") as file:
         return json.load(file)
 
 
 def predict(input_data):
+    """Return the module prediction for the input."""
     text = normalize_input(input_data)
     tokens = tokenize(text)
     model = load_model()
@@ -195,6 +207,7 @@ def predict(input_data):
 
 
 def teach(input_data, expected_output):
+    """Teach the module from a labeled example."""
     text = normalize_input(input_data)
     label = str(expected_output).strip().lower()
 
@@ -215,6 +228,7 @@ def teach(input_data, expected_output):
 
 
 def forget(input_data, expected_output=None):
+    """Forget a previously learned example."""
     text = normalize_input(input_data)
 
     if not os.path.exists(TRAIN_PATH):
@@ -240,6 +254,7 @@ def forget(input_data, expected_output=None):
 
 
 def training_examples():
+    """Return the stored training examples."""
     if not os.path.exists(TRAIN_PATH):
         return []
 
@@ -249,6 +264,7 @@ def training_examples():
 
 
 def export_data():
+    """Export the module state as a serializable payload."""
     return {
         "skill_id": SKILL_ID,
         "skill_version": SKILL_VERSION,
@@ -260,6 +276,7 @@ def export_data():
 
 
 def import_data(data):
+    """Import the module state from a payload."""
     examples = data.get("training_examples", [])
 
     with open(TRAIN_PATH, "w", newline="") as file:

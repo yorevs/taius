@@ -1,9 +1,11 @@
+"""Module for skill views."""
 import os
 
 from rich.table import Table
 
 
 def print_skill_stats(console, skill_name, skills, find_skill_by_name, validate_skill_contract):
+    """Render the selected skill statistics."""
     target_skill = find_skill_by_name(skill_name, skills)
 
     if target_skill is None:
@@ -60,6 +62,7 @@ def print_skill_stats(console, skill_name, skills, find_skill_by_name, validate_
 
 
 def print_skill_log(console, skill_name, skills, find_skill_by_name, line_count=20):
+    """Render the selected skill log."""
     target_skill = find_skill_by_name(skill_name, skills)
 
     if target_skill is None:

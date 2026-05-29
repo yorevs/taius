@@ -1,3 +1,4 @@
+"""Skill implementation module."""
 import csv
 import json
 import os
@@ -30,6 +31,7 @@ EXAMPLES = [
 
 
 def describe() -> dict:
+    """Return the module metadata contract."""
     return {
         "id": SKILL_ID,
         "version": SKILL_VERSION,
@@ -41,6 +43,7 @@ def describe() -> dict:
 
 
 def configure(config: dict):
+    """Configure the module with the provided runtime settings."""
     global CONFIG
     CONFIG = dict(config)
     os.makedirs(CONFIG["model_dir"], exist_ok=True)
@@ -48,18 +51,22 @@ def configure(config: dict):
 
 
 def model_path():
+    """Execute model path."""
     return os.path.join(CONFIG["model_dir"], "model.json")
 
 
 def train_path():
+    """Execute train path."""
     return os.path.join(CONFIG["model_dir"], "train.csv")
 
 
 def training_log_path():
+    """Execute training log path."""
     return os.path.join(CONFIG["model_dir"], "training.log")
 
 
 def write_training_log(message):
+    """Execute write training log."""
     os.makedirs(CONFIG["model_dir"], exist_ok=True)
 
     with open(training_log_path(), "a") as file:
@@ -67,6 +74,7 @@ def write_training_log(message):
 
 
 def parse_expression(input_data):
+    """Execute parse expression."""
     text = str(input_data).strip().lower()
 
     for prefix in ["approx", "estimate", "predict"]:
@@ -86,6 +94,7 @@ def parse_expression(input_data):
 
 
 def exact_result(a, op, b):
+    """Execute exact result."""
     if op == "+":
         return a + b
 
@@ -105,6 +114,7 @@ def exact_result(a, op, b):
 
 
 def normalize_number(value):
+    """Execute normalize number."""
     value = float(value)
 
     if value.is_integer():
@@ -114,6 +124,7 @@ def normalize_number(value):
 
 
 def features(a, op, b):
+    """Execute features."""
     safe_division = 0.0 if b == 0 else a / b
 
     return [
@@ -128,6 +139,7 @@ def features(a, op, b):
 
 
 def can_handle(input_data):
+    """Return whether the input matches this handler."""
     text = str(input_data).strip().lower()
 
     if not text.startswith(("approx ", "estimate ", "predict ")):
@@ -141,14 +153,17 @@ def can_handle(input_data):
 
 
 def can_train() -> bool:
+    """Return whether the module supports training."""
     return True
 
 
 def needs_training() -> bool:
+    """Return whether the module needs training."""
     return not os.path.exists(model_path())
 
 
 def seed_rows():
+    """Execute seed rows."""
     rows = []
 
     for a in range(-20, 21):
@@ -167,6 +182,7 @@ def seed_rows():
 
 
 def ensure_train_file():
+    """Execute ensure train file."""
     if os.path.exists(train_path()):
         return
 
@@ -177,6 +193,7 @@ def ensure_train_file():
 
 
 def training_examples():
+    """Return the stored training examples."""
     ensure_train_file()
 
     with open(train_path(), "r", newline="") as file:
@@ -184,15 +201,18 @@ def training_examples():
 
 
 def initial_weights(size):
+    """Execute initial weights."""
     random.seed(42)
     return [random.uniform(-0.01, 0.01) for _ in range(size)]
 
 
 def dot(left, right):
+    """Execute dot."""
     return sum(a * b for a, b in zip(left, right))
 
 
 def train_one_operator(op, parsed_rows):
+    """Execute train one operator."""
     operator_rows = [
         (row_features, target)
         for row_op, row_features, target in parsed_rows
@@ -222,6 +242,7 @@ def train_one_operator(op, parsed_rows):
 
 
 def train():
+    """Train the module and persist its model."""
     ensure_train_file()
 
     rows = training_examples()
@@ -305,6 +326,7 @@ def train():
 
 
 def load_model():
+    """Load persisted model state from disk."""
     global MODEL
 
     if not CONFIG:
@@ -320,6 +342,7 @@ def load_model():
 
 
 def predict(input_data):
+    """Return the module prediction for the input."""
     if not MODEL:
         train()
 
@@ -339,6 +362,7 @@ def predict(input_data):
 
 
 def teach(input_data, expected_output):
+    """Teach the module from a labeled example."""
     ensure_train_file()
 
     normalized_input = str(input_data).strip()
@@ -366,6 +390,7 @@ def teach(input_data, expected_output):
 
 
 def forget(input_data, expected_output=None):
+    """Forget a previously learned example."""
     if not os.path.exists(train_path()):
         return False
 
@@ -388,6 +413,7 @@ def forget(input_data, expected_output=None):
 
 
 def export_data():
+    """Export the module state as a serializable payload."""
     return {
         "id": SKILL_ID,
         "version": SKILL_VERSION,
@@ -398,6 +424,7 @@ def export_data():
 
 
 def import_data(data):
+    """Import the module state from a payload."""
     rows = data.get("examples", [])
     model = data.get("model", {})
 

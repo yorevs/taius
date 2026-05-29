@@ -26,7 +26,9 @@ TEST_DIR = dirname(__file__)
 
 class TestMain(unittest.TestCase):
     # Setup tests
+    """Tests for the application bootstrapper."""
     def setUp(self):
+        """Prepare the test fixture."""
         resource_dir = f"{TEST_DIR}/resources"
         os.environ["ACTIVE_PROFILE"] = "test"
         self.configs = AppConfigs(resource_dir=resource_dir)
@@ -36,11 +38,13 @@ class TestMain(unittest.TestCase):
 
     # Teardown tests
     def tearDown(self):
+        """Clean up after the test."""
         pass
 
     # TEST CASES ----------
 
     def test_should_test_something(self):
+        """Exercise the placeholder main test."""
         pass
 
 

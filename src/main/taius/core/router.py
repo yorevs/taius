@@ -1,3 +1,4 @@
+"""Module for router."""
 import csv
 import json
 import math
@@ -13,6 +14,7 @@ from taius.core.text import tokenize
 
 
 def calculate_skills_hash(skills):
+  """Compute a hash for the loaded skills."""
   import hashlib
 
   digest = hashlib.sha256()
@@ -30,6 +32,7 @@ def calculate_skills_hash(skills):
 
 
 def read_saved_skills_hash():
+  """Read the persisted skills hash."""
   if not os.path.exists(SKILLS_HASH_PATH):
     return ""
 
@@ -38,6 +41,7 @@ def read_saved_skills_hash():
 
 
 def save_skills_hash(skills_hash):
+  """Persist the skills hash to disk."""
   os.makedirs(CORE_DIR, exist_ok=True)
 
   with open(SKILLS_HASH_PATH, "w") as file:
@@ -45,14 +49,17 @@ def save_skills_hash(skills_hash):
 
 
 def skills_changed(skills):
+  """Return whether the loaded skills changed."""
   return calculate_skills_hash(skills) != read_saved_skills_hash()
 
 
 def update_skills_hash(skills):
+  """Update the persisted skills hash."""
   save_skills_hash(calculate_skills_hash(skills))
 
 
 def build_router_training_file(skills):
+  """Write router training examples to CSV."""
   os.makedirs(CORE_DIR, exist_ok=True)
 
   with open(ROUTER_TRAIN_PATH, "w", newline="") as file:
@@ -68,6 +75,7 @@ def build_router_training_file(skills):
 
 
 def train_router_from_existing_file():
+  """Train the router model from the existing CSV file."""
   label_counts = {}
   word_counts = {}
   vocabulary = set()
@@ -97,20 +105,24 @@ def train_router_from_existing_file():
 
 
 def train_router(skills):
+  """Build the router training data and retrain the model."""
   build_router_training_file(skills)
   train_router_from_existing_file()
 
 
 def router_needs_training(skills):
+  """Return whether the router model needs retraining."""
   return not os.path.exists(ROUTER_MODEL_PATH) or skills_changed(skills)
 
 
 def load_router_model():
+  """Load the persisted router model."""
   with open(ROUTER_MODEL_PATH, "r") as file:
     return json.load(file)
 
 
 def predict_skill(input_data, skills):
+  """Execute predict skill."""
   if not os.path.exists(ROUTER_MODEL_PATH):
     return None
 
@@ -149,6 +161,7 @@ def predict_skill(input_data, skills):
 
 
 def teach_router(input_data, skill_name, skills):
+  """Teach the router with a new labeled example."""
   valid_names = {skill["name"] for skill in skills}
 
   if skill_name not in valid_names:
@@ -168,6 +181,7 @@ def teach_router(input_data, skill_name, skills):
 
 
 def forget_router(input_data):
+  """Remove a router training example."""
   if not os.path.exists(ROUTER_TRAIN_PATH):
     return
 
@@ -191,6 +205,7 @@ def forget_router(input_data):
 
 
 def router_examples():
+  """Return the stored router training examples."""
   if not os.path.exists(ROUTER_TRAIN_PATH):
     return []
 
@@ -199,6 +214,7 @@ def router_examples():
 
 
 def export_router():
+  """Export router data to a snapshot file."""
   export_path = os.path.join(CORE_DIR, "router.export.json")
 
   data = {
@@ -214,6 +230,7 @@ def export_router():
 
 
 def import_router():
+  """Import router data from a snapshot file."""
   import_path = os.path.join(CORE_DIR, "router.export.json")
 
   if not os.path.exists(import_path):

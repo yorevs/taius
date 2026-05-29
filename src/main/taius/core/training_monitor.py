@@ -1,3 +1,4 @@
+"""Module for training monitor."""
 import os
 import threading
 import time
@@ -12,7 +13,9 @@ from rich.progress import (
 
 class TrainingLogMonitor:
 
+    """Monitor training logs and update the console progress display."""
     def __init__(self, console, log_path, title):
+        """Initialize the instance."""
         self.console = console
         self.log_path = log_path
         self.title = title
@@ -23,6 +26,7 @@ class TrainingLogMonitor:
         self.started_at = None
 
     def start(self):
+        """Start monitoring the log file."""
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
 
         if not os.path.exists(self.log_path):
@@ -45,6 +49,7 @@ class TrainingLogMonitor:
         self.thread.start()
 
     def stop(self):
+        """Stop monitoring the log file."""
         self.stop_event.set()
 
         if self.thread is not None:
@@ -55,6 +60,7 @@ class TrainingLogMonitor:
             self.progress.stop()
 
     def _watch(self):
+        """Watch the log file for new progress updates."""
         position = 0
 
         while not self.stop_event.is_set():
@@ -72,6 +78,7 @@ class TrainingLogMonitor:
             time.sleep(0.2)
 
     def _handle_line(self, line):
+        """Handle one log line update."""
         if not line or self.progress is None:
             return
 
@@ -114,6 +121,7 @@ class TrainingLogMonitor:
         )
 
     def _format_duration(self, seconds):
+        """Format a duration as HH:MM:SS."""
         seconds = int(max(0, seconds))
         hours = seconds // 3600
         minutes = (seconds % 3600) // 60
@@ -123,6 +131,7 @@ class TrainingLogMonitor:
 
 
     def _parse_epoch_line(self, line):
+        """Parse a training progress log line."""
         epoch_token = None
         loss_token = None
         examples_token = None

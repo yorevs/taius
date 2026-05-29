@@ -1,9 +1,11 @@
+"""Module for log views."""
 import os
 
 from rich.table import Table
 
 
 def print_tail_log(console, skills, core_log_path, line_count=20):
+    """Render the tail of all logs."""
     try:
         line_count = int(line_count)
     except ValueError:

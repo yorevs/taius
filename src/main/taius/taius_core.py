@@ -1,3 +1,4 @@
+"""Module for taius core."""
 import csv
 import hashlib
 import os
@@ -37,41 +38,50 @@ DEFAULT_ROUTING_THRESHOLD = 0.60
 
 
 def _taius_package():
+    """Internal helper function."""
     import taius
 
     return taius
 
 
 def _console():
+    """Internal helper function."""
     return getattr(_taius_package(), "console", console)
 
 
 def _router_config_path():
+    """Internal helper function."""
     return getattr(_taius_package(), "ROUTER_CONFIG_PATH", ROUTER_CONFIG_PATH)
 
 
 def _router_model_path():
+    """Internal helper function."""
     return getattr(_taius_package(), "ROUTER_MODEL_PATH", ROUTER_MODEL_PATH)
 
 
 def _router_train_path():
+    """Internal helper function."""
     return getattr(_taius_package(), "ROUTER_TRAIN_PATH", ROUTER_TRAIN_PATH)
 
 
 def load_skills(show_disabled=True):
+    """Load all available skills."""
     return load_taius_skills(_console(), show_disabled=show_disabled)
 
 
 def print_discovered_skills():
+    """Render the corresponding console output."""
     skills = load_skills()
     print_skills_table(_console(), skills, "Discovered Taius Skills")
 
 
 def tokenize_router_text(text):
+    """Execute tokenize router text."""
     return re.findall(r"[a-zA-Z0-9_+\-*/']+", str(text).lower())
 
 
 def build_router_training_file(skills):
+    """Write router training examples to CSV."""
     os.makedirs(CORE_DIR, exist_ok=True)
 
     with open(_router_train_path(), "w", newline="") as file:
@@ -87,6 +97,7 @@ def build_router_training_file(skills):
 
 
 def train_router(skills):
+    """Build the router training data and retrain the model."""
     build_router_training_file(skills)
 
     label_counts = {}
@@ -121,26 +132,32 @@ def train_router(skills):
 
 
 def router_needs_training():
+    """Return whether the router model needs retraining."""
     return not os.path.exists(_router_model_path()) or skills_changed()
 
 
 def load_router_config():
+    """Load the router configuration from disk."""
     return taius_load_router_config(_router_config_path(), CORE_DIR)
 
 
 def save_router_config(config):
+    """Persist the router configuration to disk."""
     return taius_save_router_config(config, _router_config_path(), CORE_DIR)
 
 
 def get_routing_threshold():
+    """Return the configured routing threshold."""
     return taius_get_routing_threshold(_router_config_path(), CORE_DIR)
 
 
 def load_router_model():
+    """Load the persisted router model."""
     return taius_load_router_model(_router_model_path())
 
 
 def predict_skill_with_router(input_data: str, skills):
+    """Predict the best skill using the router model."""
     return taius_predict_skill_with_router(
         input_data,
         skills,
@@ -150,6 +167,7 @@ def predict_skill_with_router(input_data: str, skills):
 
 
 def route_to_skill(input_data: str, skills):
+    """Route input to the best matching skill."""
     return taius_route_to_skill(
         input_data,
         skills,
@@ -160,6 +178,7 @@ def route_to_skill(input_data: str, skills):
 
 
 def teach_router(input_data: str, skill_name: str, skills):
+    """Teach the router with a new labeled example."""
     valid_names = {skill["name"] for skill in skills}
 
     if skill_name not in valid_names:
@@ -179,6 +198,7 @@ def teach_router(input_data: str, skill_name: str, skills):
 
 
 def train_router_from_existing_file():
+    """Train the router model from the existing CSV file."""
     label_counts = {}
     word_counts = {}
     vocabulary = set()
@@ -211,6 +231,7 @@ def train_router_from_existing_file():
 
 
 def forget_router(input_data: str):
+    """Remove a router training example."""
     if not os.path.exists(_router_train_path()):
         return
 
@@ -234,6 +255,7 @@ def forget_router(input_data: str):
 
 
 def train_skill_with_monitor(skill):
+    """Train a skill while monitoring the log output."""
     module = skill["module"]
     log_path = os.path.join(skill["model_dir"], "training.log")
 
@@ -252,6 +274,7 @@ def train_skill_with_monitor(skill):
 
 
 def train_router_if_needed(skills):
+    """Train the router if the skills changed."""
     if not router_needs_training():
         return
 
@@ -261,6 +284,7 @@ def train_router_if_needed(skills):
 
 
 def calculate_skills_hash():
+    """Compute a hash for the loaded skills."""
     digest = hashlib.sha256()
 
     for skill in load_skills(show_disabled=False):
@@ -276,6 +300,7 @@ def calculate_skills_hash():
 
 
 def read_saved_skills_hash():
+    """Read the persisted skills hash."""
     if not os.path.exists(SKILLS_HASH_PATH):
         return ""
 
@@ -284,6 +309,7 @@ def read_saved_skills_hash():
 
 
 def save_skills_hash(skills_hash):
+    """Persist the skills hash to disk."""
     os.makedirs(CORE_DIR, exist_ok=True)
 
     with open(SKILLS_HASH_PATH, "w") as file:
@@ -291,6 +317,7 @@ def save_skills_hash(skills_hash):
 
 
 def skills_changed():
+    """Return whether the loaded skills changed."""
     current_hash = calculate_skills_hash()
     saved_hash = read_saved_skills_hash()
 
@@ -298,10 +325,12 @@ def skills_changed():
 
 
 def update_skills_hash():
+    """Update the persisted skills hash."""
     save_skills_hash(calculate_skills_hash())
 
 
 def detect_skill_changes():
+    """Detect whether loaded skills changed."""
     if not skills_changed():
         return False
 
@@ -312,6 +341,7 @@ def detect_skill_changes():
 
 
 def configure_skill(skill):
+    """Configure a loaded skill module."""
     module = skill["module"]
 
     os.makedirs(skill["model_dir"], exist_ok=True)
@@ -327,6 +357,7 @@ def configure_skill(skill):
 
 
 def train_skills_if_needed():
+    """Train skills whose models are out of date."""
     skills = load_skills()
 
     for skill in skills:
@@ -356,6 +387,7 @@ def train_skills_if_needed():
         log_skill_event(skill, "auto-training finished")
 
 def print_router_examples():
+    """Render the router examples list."""
     if not os.path.exists(_router_train_path()):
         console.print("[yellow]No router examples found.[/yellow]")
         return
@@ -374,6 +406,7 @@ def print_router_examples():
 
 
 def print_skill_examples(skill_name: str, skills):
+    """Render a skill example table."""
     target_skill = None
 
     for skill in skills:
@@ -409,6 +442,7 @@ def print_skill_examples(skill_name: str, skills):
 
 
 def export_skill(skill_name: str, skills):
+    """Export a skill to a JSON payload."""
     target_skill = None
 
     for skill in skills:
@@ -435,6 +469,7 @@ def export_skill(skill_name: str, skills):
 
 
 def import_skill(skill_name: str, skills):
+    """Import a skill from a JSON payload."""
     target_skill = None
 
     for skill in skills:
@@ -465,6 +500,7 @@ def import_skill(skill_name: str, skills):
 
 
 def print_snapshot_list():
+    """Render the snapshot list."""
     print_taius_snapshot_list(
         console,
         SNAPSHOT_BACKUP_DIR
@@ -472,6 +508,7 @@ def print_snapshot_list():
 
 
 def backup_all_snapshot(skills):
+    """Create a snapshot backup of the router and skills."""
     return taius_backup_all_snapshot(
         skills,
         SNAPSHOT_BACKUP_DIR,
@@ -482,6 +519,7 @@ def backup_all_snapshot(skills):
 
 
 def restore_all_snapshot(snapshot_name, skills):
+    """Restore router and skill data from a snapshot."""
     return taius_restore_all_snapshot(
         snapshot_name,
         skills,
@@ -495,6 +533,7 @@ def restore_all_snapshot(snapshot_name, skills):
 
 
 def restore_all(skills):
+    """Restore all exported data from a snapshot."""
     imported = []
 
     router_import = import_router()
@@ -512,6 +551,7 @@ def restore_all(skills):
 
 
 def backup_all(skills):
+    """Export all router and skill data."""
     exported = []
 
     router_export = export_router()
@@ -529,6 +569,7 @@ def backup_all(skills):
 
 
 def export_router():
+    """Export router data to a snapshot file."""
     export_path = os.path.join(CORE_DIR, "router.export.json")
 
     examples = []
@@ -551,6 +592,7 @@ def export_router():
 
 
 def import_router():
+    """Import router data from a snapshot file."""
     import_path = os.path.join(CORE_DIR, "router.export.json")
 
     if not os.path.exists(import_path):
@@ -580,6 +622,7 @@ def import_router():
 
 
 def print_version_info(skills):
+    """Render the version information."""
     version_path = os.path.join(CORE_DIR, "version.txt")
 
     runtime_version = "unknown"
@@ -608,6 +651,7 @@ def print_version_info(skills):
 
 
 def print_help():
+    """Render the help output."""
     console.print("[bold]Taius commands[/bold]")
     console.print("/help")
     console.print("/version")
@@ -665,10 +709,12 @@ def print_help():
 
 
 def print_loaded_skills(skills):
+    """Render the loaded skills list."""
     print_skills_table(console, skills, "Loaded Taius Skills")
 
 
 def print_validate_skill(skill_name, skills):
+    """Render validation details for a skill."""
     target_skill = None
 
     for skill in skills:
@@ -709,6 +755,7 @@ def print_validate_skill(skill_name, skills):
 
 
 def print_doctor(skills):
+    """Render the diagnostics output."""
     table = Table(title="Taius Doctor")
     table.add_column("Skill")
     table.add_column("Status")
@@ -736,6 +783,7 @@ def print_doctor(skills):
 
 
 def set_routing_threshold(value):
+    """Update the routing threshold setting."""
     threshold = float(value)
 
     if threshold < 0.0 or threshold > 1.0:
@@ -749,18 +797,22 @@ def set_routing_threshold(value):
 
 
 def print_routing_threshold():
+    """Render the routing threshold value."""
     console.print(f"[cyan]Routing threshold:[/cyan] {get_routing_threshold():.2f}")
 
 
 def find_skill_by_name(skill_name, skills):
+    """Return the matching skill when present."""
     return taius_find_skill_by_name(skill_name, skills)
 
 
 def create_new_skill(skill_name):
+    """Create a new skill from the template."""
     return taius_create_new_skill(skill_name, SKILLS_SOURCE_DIR)
 
 
 def delete_skill(skill_name):
+    """Delete a skill source and model directory."""
     return taius_delete_skill(
         skill_name,
         SKILLS_SOURCE_DIR,
@@ -770,6 +822,7 @@ def delete_skill(skill_name):
 
 
 def rename_skill(old_name, new_name):
+    """Rename a skill source and model directory."""
     return taius_rename_skill(
         old_name,
         new_name,
@@ -780,18 +833,22 @@ def rename_skill(old_name, new_name):
 
 
 def disable_skill(skill_name, skills):
+    """Mark a loaded skill as disabled."""
     return taius_disable_skill(skill_name, skills)
 
 
 def enable_skill(skill_name):
+    """Remove the disabled marker from a skill."""
     return taius_enable_skill(skill_name, SKILLS_MODEL_DIR)
 
 
 def log_skill_event(skill, message):
+    """Append a message to the skill training log."""
     return taius_log_skill_event(skill, message)
 
 
 def print_tail_log(skills, line_count=20):
+    """Render the tail of all logs."""
     print_taius_tail_log(
         console,
         skills,
@@ -801,6 +858,7 @@ def print_tail_log(skills, line_count=20):
 
 
 def print_skill_stats(skill_name, skills):
+    """Render the selected skill statistics."""
     print_taius_skill_stats(
         console,
         skill_name,
@@ -811,6 +869,7 @@ def print_skill_stats(skill_name, skills):
 
 
 def print_skill_log(skill_name, skills, line_count=20):
+    """Render the selected skill log."""
     print_taius_skill_log(
         console,
         skill_name,
@@ -821,6 +880,7 @@ def print_skill_log(skill_name, skills, line_count=20):
 
 
 def print_router_stats():
+    """Render router statistics."""
     print_taius_router_stats(
         console,
         _router_model_path(),
@@ -831,6 +891,7 @@ def print_router_stats():
 
 
 def print_status(skills):
+    """Render the status output."""
     print_taius_status(
         console,
         skills,
@@ -847,6 +908,7 @@ def print_status(skills):
 
 
 def build_command_context(skills):
+    """Build the command handler context."""
     return {
         "console": console,
         "skills": skills,
@@ -886,6 +948,7 @@ def build_command_context(skills):
 
 
 def reload_skills():
+    """Reload the skill list from disk."""
     skills = load_skills()
     print_loaded_skills(skills)
     detect_skill_changes()
@@ -896,6 +959,7 @@ def reload_skills():
 
 
 def run_taius_loop():
+    """Run the interactive Taius prompt loop."""
     run_taius_runtime_loop(
         console,
         load_skills,
@@ -911,6 +975,7 @@ def run_taius_loop():
 
 
 def setup():
+    """Execute setup."""
     ensure_taius_layout()
     print_discovered_skills()
     detect_skill_changes()

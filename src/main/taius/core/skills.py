@@ -1,3 +1,4 @@
+"""Module for skills."""
 import importlib.util
 import os
 
@@ -7,6 +8,7 @@ from taius.core.paths import SKILLS_MODEL_DIR, SKILLS_SOURCE_DIR, ensure_layout
 
 
 def discover_skill_sources():
+    """Discover packaged skill source directories."""
     ensure_layout()
 
     skills = []
@@ -34,6 +36,7 @@ def discover_skill_sources():
 
 
 def is_skill_disabled(skill):
+    """Return whether the skill is disabled."""
     if isinstance(skill, dict):
         skill_name = skill.get("name", "")
     else:
@@ -46,6 +49,7 @@ def is_skill_disabled(skill):
 
 
 def load_skill_module(skill):
+    """Load a skill module from a file path."""
     module_name = f"taius_skill_{skill['name']}"
     spec = importlib.util.spec_from_file_location(module_name, skill["skill_file"])
 
@@ -59,6 +63,7 @@ def load_skill_module(skill):
 
 
 def load_skills(console, show_disabled=True):
+    """Load all available skills."""
     loaded = []
 
     for skill in discover_skill_sources():
@@ -103,6 +108,7 @@ def load_skills(console, show_disabled=True):
 
 
 def print_skills_table(console, skills, title):
+    """Render the loaded skills table."""
     table = Table(title=title)
     table.add_column("Skill")
     table.add_column("ID")
