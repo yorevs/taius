@@ -1,0 +1,2 @@
+include py-gradle-template/welcome.txt
+include py-gradle-template/.version
