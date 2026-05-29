@@ -1,6 +1,3 @@
-import os
-
-
 def find_skill(skill_name, skills):
   for skill in skills:
     if skill["name"] == skill_name:

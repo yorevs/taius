@@ -3,17 +3,20 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+RESOURCE_DIR="$PROJECT_DIR/src/main/resources"
 
-RUNTIME_NAME="taius.py"
-RUNTIME_FILE="$PROJECT_DIR/$RUNTIME_NAME"
-PATCHER="$SCRIPT_DIR/core-patcher.bash"
+export PYTHONPATH="$PROJECT_DIR/src/main"
 
-PATCH_DIR="$SCRIPT_DIR/patches"
+RUNTIME_NAME="__main__.py"
+RUNTIME_FILE="$PROJECT_DIR/src/main/taius/$RUNTIME_NAME"
+PATCHER="$SCRIPT_DIR/code-patcher.bash"
+
+PATCH_DIR="$RESOURCE_DIR/patches"
 APPLIED_PATCH_DIR="$PATCH_DIR/applied"
 REJECTED_PATCH_DIR="$PATCH_DIR/rejected"
 
-BACKUP_DIR="$SCRIPT_DIR/backups"
-MODEL_DIR="$SCRIPT_DIR/model"
+BACKUP_DIR="$RESOURCE_DIR/backups"
+MODEL_DIR="$RESOURCE_DIR/model"
 CORE_DIR="$MODEL_DIR/core"
 SKILLS_DIR="$MODEL_DIR/skills"
 
@@ -218,14 +221,15 @@ cleanup_core_if_needed() {
 }
 
 run_taius() {
-  log "Launching $RUNTIME_NAME"
+  log "Launching $RUNTIME_FILE"
 
   cd "$PROJECT_DIR"
   python3 "$RUNTIME_FILE"
 }
 
 main() {
-  cd "$PROJECT_DIR"
+  cd "$PYTHONPATH"
+  pwd
 
   ensure_layout
   apply_patches

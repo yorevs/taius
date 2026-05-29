@@ -5,6 +5,7 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
+SKILLS_DIR = PROJECT_DIR / "main" / "taius" / "skills"
 
 
 class NullConsole:
@@ -35,8 +36,13 @@ class TaiusSmokeTest(unittest.TestCase):
         self.assertIn("sentiment_skill", names)
         self.assertNotIn("_template", names)
 
+    def test_skills_source_dir_points_to_packaged_skills(self):
+        from taius.core.paths import SKILLS_SOURCE_DIR
+
+        self.assertEqual(Path(SKILLS_SOURCE_DIR).resolve(), SKILLS_DIR.resolve())
+
     def test_echo_skill_contract_and_predict(self):
-        module = load_skill_module(PROJECT_DIR / "skills" / "echo_skill" / "skill.py")
+        module = load_skill_module(SKILLS_DIR / "echo_skill" / "skill.py")
         description = module.describe()
 
         self.assertEqual(description["id"], "core.echo")
@@ -54,7 +60,7 @@ class TaiusSmokeTest(unittest.TestCase):
             "output_type",
         }
 
-        for skill_path in (PROJECT_DIR / "skills").glob("*/skill.py"):
+        for skill_path in SKILLS_DIR.glob("*/skill.py"):
             module = load_skill_module(skill_path)
             description = module.describe()
 
@@ -70,7 +76,7 @@ class TaiusSmokeTest(unittest.TestCase):
         self.assertLessEqual(threshold, 1.0)
 
     def test_template_contract(self):
-        module = load_skill_module(PROJECT_DIR / "skills" / "_template" / "skill.py")
+        module = load_skill_module(SKILLS_DIR / "_template" / "skill.py")
         description = module.describe()
 
         self.assertEqual(description["contract_version"], "1.0")

@@ -12,19 +12,17 @@
 
    Copyright (c) COPYRIGHT
 """
-from __classpath__ import classpath
+from textwrap import dedent
+import logging as log
+import sys
+
 from clitt.core.tui.tui_application import TUIApplication
 from hspylib.core.enums.charset import Charset
-from hspylib.core.tools.commons import sysout
 from hspylib.core.zoned_datetime import now
 from hspylib.modules.application.exit_status import ExitStatus
 from hspylib.modules.application.version import Version
-from pathlib import Path
-from textwrap import dedent
 
-import logging as log
-import os
-import sys
+from __classpath__ import classpath
 
 
 class Main(TUIApplication):
@@ -34,10 +32,10 @@ class Main(TUIApplication):
     DESCRIPTION: str = classpath.get_source("welcome.txt").read_text(encoding=Charset.UTF_8.val)
 
     # Location of the .version file
-    VERSION: Version = Version.load(load_dir=classpath.source_path())
+    VERSION: Version = Version.load(load_dir=classpath.source_path)
 
     # The resources folder
-    RESOURCE_DIR: str = str(classpath.resource_path())
+    RESOURCE_DIR: str = str(classpath.resource_path)
 
     INSTANCE: "Main"
 
@@ -65,9 +63,8 @@ class Main(TUIApplication):
 
     def _exec_application(self) -> ExitStatus:
         """Execute the application main flow."""
-        sysout(Main.DESCRIPTION)
-        sysout(self.configs['taius.sample.message'])
-        sysout(Path(os.path.join(self.RESOURCE_DIR), '../welcome.txt').read_text(encoding=Charset.UTF_8.val), markdown=True)
+        from taius import taius_core as t
+        t.setup()
 
         return ExitStatus.SUCCESS
 

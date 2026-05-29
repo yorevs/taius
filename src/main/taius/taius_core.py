@@ -8,44 +8,23 @@ from rich.table import Table
 
 from taius.core.commands import handle_command, is_command
 from taius.core.log_views import print_tail_log as print_taius_tail_log
-from taius.core.paths import (
-    APP_NAME,
-    CORE_DIR,
-    CORE_LOG_PATH,
-    ROUTER_MODEL_PATH,
-    ROUTER_TRAIN_PATH,
-    SKILLS_HASH_PATH,
-    SKILLS_MODEL_DIR,
-    SKILLS_SOURCE_DIR,
-    SNAPSHOT_BACKUP_DIR,
-)
-from taius.core.paths import ensure_layout as ensure_taius_layout
-from taius.core.router_runtime import (
-    get_routing_threshold as taius_get_routing_threshold,
-)
-from taius.core.router_runtime import load_router_config as taius_load_router_config
-from taius.core.router_runtime import load_router_model as taius_load_router_model
-from taius.core.router_runtime import (
-    predict_skill_with_router as taius_predict_skill_with_router,
-)
-from taius.core.router_runtime import route_to_skill as taius_route_to_skill
-from taius.core.router_runtime import save_router_config as taius_save_router_config
+from taius.core.paths import APP_NAME, CORE_DIR, CORE_LOG_PATH, ROUTER_MODEL_PATH, ROUTER_TRAIN_PATH, SKILLS_HASH_PATH, \
+    SKILLS_MODEL_DIR, SKILLS_SOURCE_DIR, SNAPSHOT_BACKUP_DIR, ensure_layout as ensure_taius_layout
+from taius.core.router_runtime import get_routing_threshold as taius_get_routing_threshold, \
+    load_router_config as taius_load_router_config, load_router_model as taius_load_router_model, \
+    predict_skill_with_router as taius_predict_skill_with_router, route_to_skill as taius_route_to_skill, \
+    save_router_config as taius_save_router_config
 from taius.core.router_stats import print_router_stats as print_taius_router_stats
 from taius.core.runtime import run_taius_loop as run_taius_runtime_loop
-from taius.core.skill_management import create_new_skill as taius_create_new_skill
-from taius.core.skill_management import delete_skill as taius_delete_skill
-from taius.core.skill_management import disable_skill as taius_disable_skill
-from taius.core.skill_management import enable_skill as taius_enable_skill
-from taius.core.skill_management import find_skill_by_name as taius_find_skill_by_name
-from taius.core.skill_management import log_skill_event as taius_log_skill_event
-from taius.core.skill_management import rename_skill as taius_rename_skill
-from taius.core.skill_views import print_skill_log as print_taius_skill_log
-from taius.core.skill_views import print_skill_stats as print_taius_skill_stats
-from taius.core.skills import load_skills as load_taius_skills
-from taius.core.skills import print_skills_table
-from taius.core.snapshots import backup_all_snapshot as taius_backup_all_snapshot
-from taius.core.snapshots import print_snapshot_list as print_taius_snapshot_list
-from taius.core.snapshots import restore_all_snapshot as taius_restore_all_snapshot
+from taius.core.skill_management import create_new_skill as taius_create_new_skill, delete_skill as taius_delete_skill, \
+    disable_skill as taius_disable_skill, enable_skill as taius_enable_skill, \
+    find_skill_by_name as taius_find_skill_by_name, log_skill_event as taius_log_skill_event, \
+    rename_skill as taius_rename_skill
+from taius.core.skill_views import print_skill_log as print_taius_skill_log, \
+    print_skill_stats as print_taius_skill_stats
+from taius.core.skills import load_skills as load_taius_skills, print_skills_table
+from taius.core.snapshots import backup_all_snapshot as taius_backup_all_snapshot, \
+    print_snapshot_list as print_taius_snapshot_list, restore_all_snapshot as taius_restore_all_snapshot
 from taius.core.status import print_status as print_taius_status
 from taius.core.training_monitor import TrainingLogMonitor
 from taius.core.validation import validate_skill_contract, validate_skill_name
@@ -909,7 +888,7 @@ def run_taius_loop():
     )
 
 
-if __name__ == "__main__":
+def setup():
     ensure_taius_layout()
     print_discovered_skills()
     detect_skill_changes()

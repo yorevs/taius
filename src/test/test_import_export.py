@@ -1,9 +1,9 @@
 import shutil
 import sys
 import unittest
-import taius.taius as taius
 from pathlib import Path
 
+import taius.taius_core as taius
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR))

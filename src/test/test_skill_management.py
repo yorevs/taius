@@ -5,6 +5,8 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
+SKILLS_DIR = PROJECT_DIR / "main" / "taius" / "skills"
+SKILLS_MODEL_DIR = PROJECT_DIR / "main" / "resources" / "model" / "skills"
 
 
 class SkillManagementTest(unittest.TestCase):
@@ -14,8 +16,8 @@ class SkillManagementTest(unittest.TestCase):
         self.renamed_skill_name = "unit_renamed_skill"
 
         for name in [self.skill_name, self.renamed_skill_name]:
-            shutil.rmtree(PROJECT_DIR / "skills" / name, ignore_errors=True)
-            shutil.rmtree(PROJECT_DIR / "resources" / "model" / "skills" / name, ignore_errors=True)
+            shutil.rmtree(SKILLS_DIR / name, ignore_errors=True)
+            shutil.rmtree(SKILLS_MODEL_DIR / name, ignore_errors=True)
 
     def tearDown(self):
         self.setUp()
@@ -28,29 +30,29 @@ class SkillManagementTest(unittest.TestCase):
         )
         from taius.core.validation import validate_skill_name
 
-        created = create_new_skill(self.skill_name, "skills")
-        self.assertTrue((PROJECT_DIR / created).exists())
+        created = create_new_skill(self.skill_name, str(SKILLS_DIR))
+        self.assertTrue(Path(created).exists())
 
         renamed = rename_skill(
             self.skill_name,
             self.renamed_skill_name,
-            "skills",
-            "resources/model/skills",
+            str(SKILLS_DIR),
+            str(SKILLS_MODEL_DIR),
             validate_skill_name,
         )
 
-        self.assertTrue((PROJECT_DIR / renamed["source_dir"]).exists())
-        self.assertFalse((PROJECT_DIR / "skills" / self.skill_name).exists())
+        self.assertTrue(Path(renamed["source_dir"]).exists())
+        self.assertFalse((SKILLS_DIR / self.skill_name).exists())
 
         removed = delete_skill(
             self.renamed_skill_name,
-            "skills",
-            "resources/model/skills",
+            str(SKILLS_DIR),
+            str(SKILLS_MODEL_DIR),
             validate_skill_name,
         )
 
-        self.assertIn(f"skills/{self.renamed_skill_name}", removed)
-        self.assertFalse((PROJECT_DIR / "skills" / self.renamed_skill_name).exists())
+        self.assertIn(str(SKILLS_DIR / self.renamed_skill_name), removed)
+        self.assertFalse((SKILLS_DIR / self.renamed_skill_name).exists())
 
     def test_invalid_skill_name_rejected(self):
         from taius.core.validation import validate_skill_name

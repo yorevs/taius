@@ -8,4 +8,11 @@
 */
 
 /* HSPyLib projects */
-package: hspylib, version: 1.12.46, mode: ge
+package: hspylib, version: 1.12.53, mode: ge
+package: hspylib-clitt, version: 0.9.145, mode: ge
+
+/* General */
+package: retry2, version: 0.9.5, mode: ge
+
+/* CLI/TUI */
+package: rich, version: 14.2.0, mode: ge

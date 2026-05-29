@@ -13,8 +13,8 @@ def buildDirPath = "${project.projectDir}/build"
 
 pyGradle {
   sourceRoot = sourceRoot
-  application = "${sourceRoot}/main/rpg_game/__main__.py"
-  versionFile = "${sourceRoot}/main/rpg_game/.version"
+  application = "${sourceRoot}/main/taius/__main__.py"
+  versionFile = "${sourceRoot}/main/taius/.version"
   pythonPath = "${sourceRoot}/main:${sourceRoot}/test"
 }
 

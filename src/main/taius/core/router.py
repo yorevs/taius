@@ -4,10 +4,10 @@ import math
 import os
 
 from taius.core.paths import (
-  CORE_DIR,
-  ROUTER_MODEL_PATH,
-  ROUTER_TRAIN_PATH,
-  SKILLS_HASH_PATH,
+    CORE_DIR,
+    ROUTER_MODEL_PATH,
+    ROUTER_TRAIN_PATH,
+    SKILLS_HASH_PATH,
 )
 from taius.core.text import tokenize
 
