@@ -1,6 +1,13 @@
 import os
 
+from clitt.core.term.terminal import terminal
 from taius.core.training_monitor import TrainingLogMonitor
+
+
+def restore_terminal_state():
+    """Restore terminal echo and cursor state before entering the prompt loop."""
+    if terminal.is_a_tty():
+        terminal.restore()
 
 
 def run_taius_loop(
@@ -15,8 +22,10 @@ def run_taius_loop(
     forget_router,
     build_command_context
 ):
+    """Run the interactive Taius prompt loop."""
     skills = load_skills()
     train_router_if_needed(skills)
+    restore_terminal_state()
 
     while True:
         try:
